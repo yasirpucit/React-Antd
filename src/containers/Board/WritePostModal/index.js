@@ -1,26 +1,8 @@
-import React, { memo } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { createStructuredSelector } from 'reselect';
-import { compose } from 'redux';
 import { Button, Modal, Input, Icon, Upload } from 'antd';
 
-import {
-  makeSelectModalVisible,
-  makeSelectModalLoading,
-  makeSelectTitle,
-  makeSelectText,
-  makeSelectPhoto,
-} from '../board.selectors';
-import {
-  handleModalCancelAction,
-  postPostsAction,
-  onChangeTitleAction,
-  onChangeTextAction,
-  onChangeAddPhotoAction,
-  onChangeDelPhotoAction,
-} from '../board.actions';
-
+const { TextArea } = Input;
 function WritePostModal(props) {
   return (
     <Modal
@@ -34,12 +16,7 @@ function WritePostModal(props) {
         <Input placeholder="Title" onChange={props.onChangeTitle} value={props.title} />
       </div>
       <div style={{ marginBottom: 16 }}>
-        <Input.TextArea
-          rows={4}
-          placeholder="Write some text..."
-          onChange={props.onChangeText}
-          value={props.text}
-        />
+        <TextArea rows={4} placeholder="Write some text..." onChange={props.onChangeText} value={props.text} />
       </div>
       <div style={{ marginBottom: 16 }}>
         <Upload
@@ -50,11 +27,11 @@ function WritePostModal(props) {
         >
           <Button>
             <Icon type="upload" /> Select a Photo
-            </Button>
+          </Button>
         </Upload>
       </div>
     </Modal>
-  )
+  );
 }
 
 WritePostModal.propTypes = {
@@ -71,32 +48,4 @@ WritePostModal.propTypes = {
   onChangeDelPhoto: PropTypes.func,
 };
 
-const mapStateToProps = createStructuredSelector({
-  modalVisible: makeSelectModalVisible(),
-  modalLoading: makeSelectModalLoading(),
-  title: makeSelectTitle(),
-  text: makeSelectText(),
-  photo: makeSelectPhoto(),
-});
-
-const mapDispatchToProps = dispatch => ({
-  postPosts: () => dispatch(postPostsAction()),
-  handleModalCancel: () => dispatch(handleModalCancelAction()),
-  onChangeTitle: e => dispatch(onChangeTitleAction(e.target.value)),
-  onChangeText: e => dispatch(onChangeTextAction(e.target.value)),
-  onChangeAddPhoto: file => {
-    dispatch(onChangeAddPhotoAction(file));
-    return false;
-  },
-  onChangeDelPhoto: () => dispatch(onChangeDelPhotoAction()),
-});
-
-const withConnect = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-);
-
-export default compose(
-  withConnect,
-  memo,
-)(WritePostModal);
+export default WritePostModal;

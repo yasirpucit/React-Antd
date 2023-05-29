@@ -1,82 +1,39 @@
-import React, { memo } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { Helmet } from 'react-helmet';
-import { createStructuredSelector } from 'reselect';
-import { compose } from 'redux';
-import { Input, Icon, Button } from 'antd';
-
-import { useInjectSaga } from 'utils/injectSaga';
-import { useInjectReducer } from 'utils/injectReducer';
-import { makeSelectEmail, makeSelectPassword } from './signin.selectors';
-import { postSignInAction, onChangeEmailAction, onChangePasswordAction } from './signin.actions';
-import reducer from './signin.reducer';
-import saga from './signin.saga';
-
-const key = 'signin';
-
-function SignIn(props) {
-  useInjectReducer({ key, reducer });
-  useInjectSaga({ key, saga });
+import React, { useEffect } from 'react';
+import { Input, Button } from 'antd';
+import { SignInWrapper } from './style';
+import Logo from '../../static/assets/chatgpt.svg';
+const { Password } = Input;
+function SignIn() {
+  useEffect(() => {
+    console.log('\n\n\n in sign in \n\n\n\n');
+  }, []);
 
   return (
-    <>
-      <Helmet>
-        <title>SignIn</title>
-        <meta name="description" content="Description of SignIn" />
-      </Helmet>
-      <div style={{ marginBottom: 16 }}>
-        <Input
-          prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-          placeholder="Email"
-          size="large"
-          onChange={props.onChangeEmail}
-          onPressEnter={props.postSignIn}
-          value={props.email}
-        />
+    <SignInWrapper>
+      <div className="signin-container">
+        <div className="signin-box">
+          <div className="logo">
+            <img src={Logo} alt="" width="80" />
+          </div>
+          <div className="form-item">
+            <label htmlFor="email">Email:</label>
+            <Input placeholder="Enter Email" type="email" id="email" name="email" />
+          </div>
+          <div className="form-item">
+            <label htmlFor="password">Password:</label>
+            <Password placeholder="Enter Password" id="password" name="password" />
+          </div>
+          <Button className="submit-button" type="primary">
+            Sign In
+          </Button>
+          <div className="footer-links">
+            <a href="#">Sign Up</a>
+            <a href="#">Forgot Password</a>
+          </div>
+        </div>
       </div>
-      <div style={{ marginBottom: 16 }}>
-        <Input.Password
-          prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-          placeholder="Password"
-          size="large"
-          onChange={props.onChangePassword}
-          onPressEnter={props.postSignIn}
-          value={props.password}
-        />
-      </div>
-      <Button type="primary" onClick={props.postSignIn}>
-        Sign In
-      </Button>
-    </>
+    </SignInWrapper>
   );
 }
 
-SignIn.propTypes = {
-  email: PropTypes.string,
-  password: PropTypes.string,
-  postSignIn: PropTypes.func,
-  onChangeEmail: PropTypes.func,
-  onChangePassword: PropTypes.func,
-};
-
-const mapStateToProps = createStructuredSelector({
-  email: makeSelectEmail(),
-  password: makeSelectPassword(),
-});
-
-const mapDispatchToProps = dispatch => ({
-  postSignIn: () => dispatch(postSignInAction()),
-  onChangeEmail: e => dispatch(onChangeEmailAction(e.target.value)),
-  onChangePassword: e => dispatch(onChangePasswordAction(e.target.value)),
-});
-
-const withConnect = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-);
-
-export default compose(
-  withConnect,
-  memo,
-)(SignIn);
+export default SignIn;
