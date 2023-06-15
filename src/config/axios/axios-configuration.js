@@ -7,7 +7,7 @@ const setAuthToken = token => {
 };
 
 const axiosBaseUrl = () => {
-  axios.defaults.baseURL = 'http://localhost:5000/api/';
+  axios.defaults.baseURL = 'http://localhost:8080/api/';
   return axios;
 };
 

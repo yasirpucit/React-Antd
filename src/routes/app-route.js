@@ -2,7 +2,7 @@ import React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
-import Board from '../containers/Board';
+import Dashboard from '../containers/Dashboard';
 import Layout from '../layout';
 
 import PrivateRoute from './private-route';
@@ -19,10 +19,10 @@ const AppRoute = () => {
       <Route exact path="/">
         <Redirect to="/dashboard" />
       </Route>
-      <PrivateRoute path="/dashboard" component={Board} />
+      <PrivateRoute path="/dashboard" component={Dashboard} />
 
       <Redirect from="*" to="/" />
-    </Switch>
+    </Switch >
   );
 };
 

@@ -1,6 +1,6 @@
 import Styled from 'styled-components';
 
-const SignInWrapper = Styled.div`
+const SignUpWrapper = Styled.div`
 body {
     background-color: #f0f2f5;
   }
@@ -14,7 +14,7 @@ body {
 
   .signin-box {
     width: 400px;
-    height: 400px;
+    height: 480px;
     padding: 20px;
     background-color: #fff;
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
@@ -48,4 +48,4 @@ body {
   }
 `;
 
-export { SignInWrapper };
+export { SignUpWrapper };

@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-underscore-dangle */
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { axiosBaseUrl } from '../../config/axios/axios-configuration';
@@ -27,25 +29,6 @@ export const CreatePassword = createAsyncThunk('auth/createPassword', async (dat
   try {
     const { email, password } = data;
     const response = await axios.put('/auth/create-password', { email, password });
-
-    return response.data;
-  } catch (err) {
-    if (err.response && err.response.data) {
-      return thunkAPI.rejectWithValue({
-        err: err.response.data,
-        status: err.response.status,
-      });
-    }
-    return thunkAPI.rejectWithValue({
-      err: 'Network Error',
-    });
-  }
-});
-
-export const AttachFacebookProfile = createAsyncThunk('auth/attachFacebookProfile', async (data, thunkAPI) => {
-  try {
-    const { facebookProfileData } = data;
-    const response = await axios.post('/auth/attach-facebook-profile', { facebookProfileData });
 
     return response.data;
   } catch (err) {
@@ -245,9 +228,6 @@ const auth = createSlice({
     email: '',
     message: '',
     emailVerified: false,
-    friendsSynced: true,
-    attachProfile: {},
-    facebookProfileData: {},
     success: '',
     resetEmail: '',
     err: false,
@@ -266,8 +246,6 @@ const auth = createSlice({
         name: '',
         email: '',
         message: '',
-        emailVerified: false,
-        facebookProfileData: {},
         err: '',
         loading: false,
         userType: false,
@@ -282,12 +260,9 @@ const auth = createSlice({
       facebookId: '',
       image: '',
       success: '',
-      emailVerified: false,
-      facebookProfileData: {},
       resetEmail: '',
       err: false,
       loading: '',
-      userType: false,
       token: '',
       userId: '',
       payment: {},
@@ -304,18 +279,14 @@ const auth = createSlice({
       loading: false,
       token: action.payload.token,
       name: action.payload.user.name,
-      emailVerified: true,
-      friendsSynced: action.payload.user.friendsSynced,
       email: action.payload.user.email,
-      userName: action.payload.user.userName,
       userId: action.payload.user._id,
-      status: action.payload.user.status,
     }),
     [SignUp.rejected]: (state, action) => ({
       ...state,
       success: false,
       loading: false,
-      err: action.payload.err.error,
+      err: action.payload.err?.error || action.payload.err,
     }),
     [GetUser.pending]: (state, action) => ({
       ...state,
@@ -350,23 +321,6 @@ const auth = createSlice({
       success: false,
       loading: false,
       err: action.payload.err.message,
-    }),
-    [AttachFacebookProfile.pending]: (state, action) => ({
-      ...state,
-      loading: true,
-    }),
-    [AttachFacebookProfile.fulfilled]: (state, action) => ({
-      ...state,
-      loading: false,
-      success: true,
-      message: action.payload.message,
-    }),
-    [AttachFacebookProfile.rejected]: (state, action) => ({
-      ...state,
-      success: false,
-      loading: false,
-      facebookProfileData: null,
-      err: action.payload.err,
     }),
     [CreatePassword.pending]: (state, action) => ({
       ...state,
@@ -407,16 +361,9 @@ const auth = createSlice({
     [SignIn.fulfilled]: (state, action) => ({
       success: true,
       loading: false,
-      name: action.payload.user._doc.name,
-      facebookProfileData: action.payload.user._doc.facebookProfile,
-      email: action.payload.user._doc.email,
-      emailVerified: false,
-      friendsSynced: action.payload.user._doc?.friendsSynced,
-      userId: action.payload.user._doc._id,
-      payment: action.payload.user._doc.payment,
-      cardName: action.payload.user._doc.cardName,
-      selectedPlan: action.payload.user._doc.selectedPlan,
-      status: action.payload.user._doc.status,
+      name: action.payload.user.name,
+      email: action.payload.user.email,
+      userId: action.payload.user._id,
       token: action.payload.token,
     }),
     [SignIn.rejected]: (state, action) => ({

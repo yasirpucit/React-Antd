@@ -1,7 +1,8 @@
-import React from 'react';
-import { Redirect, Switch, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Redirect, Switch, Route, useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import SignIn from '../containers/SignIn';
+
 import NotFound from '../containers/NotFound';
 import PublicRoute from './public-route';
 import PrivateRoute from './private-route';
@@ -10,14 +11,18 @@ import PrivateRoute from './private-route';
 import { setAuthToken } from '../config/axios/axios-configuration';
 
 const AuthRoute = () => {
+  const history = useHistory();
   const { token } = useSelector(state => state.auth);
 
   setAuthToken(token);
-  console.log('\n\n\n in app route \n\n\n\n');
+
+  useEffect(() => {
+    if (token) return history.push('/dashboard');
+  }, [token]);
 
   return (
     <Switch>
-      <PublicRoute path="/auth/signin" component={SignIn} />
+      {!token && <PublicRoute path="/auth/sign-in" component={SignIn} />}
       {/* Private Routes */}
 
       {/* <PrivateRoute path="/auth/subscription-plans" component={NotFound} /> */}

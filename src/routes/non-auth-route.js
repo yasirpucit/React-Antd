@@ -1,20 +1,21 @@
 /* eslint-disable consistent-return */
-import React from 'react';
-import { Switch } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Switch, Route, useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
+import SignUp from '../containers/signup';
 import { setAuthToken } from '../config/axios/axios-configuration';
 
 const NonAuthRoute = () => {
+  const history = useHistory();
   const { token } = useSelector(state => state.auth);
   setAuthToken(token);
 
-  return (
-    <Switch>
-      {/* <Route path='/non-auth/sign-in' component={SignUp} />
-      <Route path='/non-auth/free-plan' component={SubscriptionPlans} /> */}
-    </Switch>
-  );
+  useEffect(() => {
+    if (token) return history.push('/dashboard');
+  }, [token]);
+
+  return <Switch>{!token && <Route path="/non-auth/register" component={SignUp} />}</Switch>;
 };
 
 export default NonAuthRoute;

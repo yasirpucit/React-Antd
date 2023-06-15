@@ -1,6 +1,8 @@
 /* eslint-disable import/extensions */
 import React, { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
+import { hot } from 'react-hot-loader/root';
+
 import { Switch, BrowserRouter as Router } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import './static/css/style.css';
@@ -42,7 +44,7 @@ const ProviderConfig = () => {
   );
 };
 
-export default function App() {
+function App() {
   return (
     <Provider store={Store}>
       <PersistGate loading={null} persistor={persistor}>
@@ -51,3 +53,5 @@ export default function App() {
     </Provider>
   );
 }
+
+export default hot(App);
