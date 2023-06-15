@@ -22,7 +22,7 @@ const AppRoute = () => {
       <PrivateRoute path="/dashboard" component={Dashboard} />
 
       <Redirect from="*" to="/" />
-    </Switch>
+    </Switch >
   );
 };
 
