@@ -1,32 +1,57 @@
-import React from 'react';
-import { Helmet } from 'react-helmet';
-import { Switch, Route } from 'react-router-dom';
-import { Layout } from 'antd';
+/* eslint-disable import/extensions */
+import React, { useEffect, useState } from 'react';
+import { Provider } from 'react-redux';
+import { hot } from 'react-hot-loader/root';
 
-import Header from 'components/Header';
-import Sider from 'components/Sider';
-import PrivateRoute from 'components/PrivateRoute';
-import mainRoutes from 'routes/mainRoutes';
+import { Switch, BrowserRouter as Router } from 'react-router-dom';
+import { ConfigProvider } from 'antd';
+import './static/css/style.css';
+import { ThemeProvider } from 'styled-components';
+import { PersistGate } from 'redux-persist/integration/react';
+import { persistStore } from 'redux-persist';
 
-export default function App() {
+import AppRoute from './routes/app-route';
+import NonAuthRoute from './routes/non-auth-route';
+import AuthRoute from './routes/auth-route';
+import Store from './redux/store/index';
+import { theme } from './theme/themeVariables';
+const persistor = persistStore(Store);
+
+const ProviderConfig = () => {
+  const [path, setPath] = useState(window.location.pathname);
+
+  useEffect(() => {
+    let unmounted = false;
+    if (!unmounted) {
+      setPath(window.location.pathname);
+    }
+    // eslint-disable-next-line no-return-assign
+    return () => (unmounted = true);
+  }, [setPath]);
+
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Helmet
-        titleTemplate="%s - Create React Ant Design Boilerplate"
-        defaultTitle="Create React Ant Design Boilerplate"
-      >
-        <meta name="description" content="A Create React Ant Design Boilerplate application" />
-      </Helmet>
-      <Header />
-      <Layout>
-        <Sider />
-        <Layout>
-          <Layout.Content style={{ margin: '16px' }}>
-            <Switch>{mainRoutes.map(route => (route.auth ? <PrivateRoute {...route} /> : <Route {...route} />))}</Switch>
-          </Layout.Content>
-          <Layout.Footer style={{ textAlign: 'center' }}>Create React Ant Design Boilerplate</Layout.Footer>
-        </Layout>
-      </Layout>
-    </Layout>
+    <ConfigProvider direction="ltr">
+      <ThemeProvider theme={{ ...theme, rtl: false, topMenu: false, darkMode: false }}>
+        <Router>
+          <Switch>
+            <AuthRoute path="/auth" />
+            <NonAuthRoute path="/non-auth" />
+            <AppRoute path="/" />
+          </Switch>
+        </Router>
+      </ThemeProvider>
+    </ConfigProvider>
+  );
+};
+
+function App() {
+  return (
+    <Provider store={Store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <ProviderConfig />
+      </PersistGate>
+    </Provider>
   );
 }
+
+export default hot(App);

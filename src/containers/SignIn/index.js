@@ -1,82 +1,91 @@
-import React, { memo } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { Helmet } from 'react-helmet';
-import { createStructuredSelector } from 'reselect';
-import { compose } from 'redux';
-import { Input, Icon, Button } from 'antd';
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+import React, { useEffect, useState } from 'react';
+import { Input, Button, message } from 'antd';
 
-import { useInjectSaga } from 'utils/injectSaga';
-import { useInjectReducer } from 'utils/injectReducer';
-import { makeSelectEmail, makeSelectPassword } from './signin.selectors';
-import { postSignInAction, onChangeEmailAction, onChangePasswordAction } from './signin.actions';
-import reducer from './signin.reducer';
-import saga from './signin.saga';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { SignInWrapper } from './style';
+import Logo from '../../static/assets/chatgpt.svg';
 
-const key = 'signin';
+import { SetState, SignIn } from '../../redux/slices/auth-slice';
 
-function SignIn(props) {
-  useInjectReducer({ key, reducer });
-  useInjectSaga({ key, saga });
+const { Password } = Input;
+
+function SignInComponent() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const { loading, success, err } = useSelector(({ auth }) => auth);
+
+  console.log({ success, err });
+  useEffect(() => {
+    if (success) {
+      dispatch(SetState({ field: 'success', value: false }));
+      return history.push('/dashboard');
+    }
+    if (err) {
+      dispatch(SetState({ field: 'err', value: false }));
+      return message.error(err);
+    }
+  }, [success, err]);
+
+  const sendSignInRequest = () => {
+    const userData = { email, password };
+    return dispatch(SignIn(userData));
+  };
 
   return (
-    <>
-      <Helmet>
-        <title>SignIn</title>
-        <meta name="description" content="Description of SignIn" />
-      </Helmet>
-      <div style={{ marginBottom: 16 }}>
-        <Input
-          prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-          placeholder="Email"
-          size="large"
-          onChange={props.onChangeEmail}
-          onPressEnter={props.postSignIn}
-          value={props.email}
-        />
+    <SignInWrapper>
+      <div className="signin-container">
+        <div className="signin-box">
+          <div className="logo">
+            <img src={Logo} alt="" width="80" />
+          </div>
+          <div className="form-item">
+            <label htmlFor="email">Email:</label>
+            <Input
+              value={email}
+              onChange={event => {
+                setEmail(event.target.value);
+              }}
+              placeholder="Enter Email"
+              type="email"
+              id="email"
+              name="email"
+            />
+          </div>
+          <div className="form-item">
+            <label htmlFor="password">Password:</label>
+            <Password
+              value={password}
+              onChange={event => {
+                setPassword(event.target.value);
+              }}
+              placeholder="Enter Password"
+              id="password"
+              name="password"
+            />
+          </div>
+          <Button loading={loading} onClick={sendSignInRequest} className="submit-button" type="primary">
+            Sign In
+          </Button>
+          <div className="footer-links">
+            <span
+              onClick={() => {
+                history.push('/non-auth/register');
+              }}
+            >
+              Sign Up
+            </span>
+            <span>Forgot Password</span>
+          </div>
+        </div>
       </div>
-      <div style={{ marginBottom: 16 }}>
-        <Input.Password
-          prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-          placeholder="Password"
-          size="large"
-          onChange={props.onChangePassword}
-          onPressEnter={props.postSignIn}
-          value={props.password}
-        />
-      </div>
-      <Button type="primary" onClick={props.postSignIn}>
-        Sign In
-      </Button>
-    </>
+    </SignInWrapper>
   );
 }
 
-SignIn.propTypes = {
-  email: PropTypes.string,
-  password: PropTypes.string,
-  postSignIn: PropTypes.func,
-  onChangeEmail: PropTypes.func,
-  onChangePassword: PropTypes.func,
-};
-
-const mapStateToProps = createStructuredSelector({
-  email: makeSelectEmail(),
-  password: makeSelectPassword(),
-});
-
-const mapDispatchToProps = dispatch => ({
-  postSignIn: () => dispatch(postSignInAction()),
-  onChangeEmail: e => dispatch(onChangeEmailAction(e.target.value)),
-  onChangePassword: e => dispatch(onChangePasswordAction(e.target.value)),
-});
-
-const withConnect = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-);
-
-export default compose(
-  withConnect,
-  memo,
-)(SignIn);
+export default SignInComponent;
